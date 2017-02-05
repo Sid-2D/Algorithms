@@ -2,24 +2,58 @@
 
 #include <iostream>
 #include <queue>
+#include <cmath>
 #include <utility>
 #include <vector>
+#include <set>
+
 using namespace std;
 
 priority_queue < pair <int, vector<int> > > PQ;
 pair <int, vector<int> > tempPair;
 vector<int> goal;
 
-int getPriority(vector<int> board) {
+// A global hash to prevent same state to be inserted again
+set < vector<int> > checked;
+ 
+// Hamming priority function
+int getHammingPriority(vector<int> board) {
 	int priority = 0;
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
-			if (board[i * 3 + j] != (i * 3 + j + 1)) {
+			if (board[i * 3 + j] != goal[i * 3 + j]) {
 				priority++;
 			}
 		}
 	}
 	priority--;
+	return priority;
+}
+
+// Manhattan priority function
+int getManhattanPriority(vector<int> board) {
+	int priority = 0;
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
+			if (board[i * 3 + j] == 1) {
+				priority += abs(i - 0) + abs(j - 0);
+			} else if (board[i * 3 + j] == 2) {
+				priority += abs(i - 0) + abs(j - 1);
+			} else if (board[i * 3 + j] == 3) {
+				priority += abs(i - 0) + abs(j - 2);
+			} else if (board[i * 3 + j] == 4) {
+				priority += abs(i - 1) + abs(j - 2);
+			} else if (board[i * 3 + j] == 5) {
+				priority += abs(i - 2) + abs(j - 2);
+			} else if (board[i * 3 + j] == 6) {
+				priority += abs(i - 2) + abs(j - 1);
+			} else if (board[i * 3 + j] == 7) {
+				priority += abs(i - 2) + abs(j - 0);
+			} else if (board[i * 3 + j] == 8) {
+				priority += abs(i - 1) + abs(j - 0);
+			}
+		}
+	}
 	return priority;
 }
 
@@ -47,19 +81,31 @@ void makeMove(vector<int> board, int steps) {
 			if (board[i * 3 + j] == 0) {
 				if (i > 0) {
 					tempBoard = move(board, i, j, i - 1, j);
-					PQ.push(make_pair(-1 * (getPriority(tempBoard) + steps), tempBoard));
+					if (checked.find(tempBoard) == checked.end()) {
+						PQ.push(make_pair(-1 * (getManhattanPriority(tempBoard) + steps), tempBoard));
+						checked.insert(tempBoard);
+					}
 				}
 				if (i < 2) {
 					tempBoard = move(board, i, j, i + 1, j);
-					PQ.push(make_pair(-1 * (getPriority(tempBoard) + steps), tempBoard));	
+					if (checked.find(tempBoard) == checked.end()) {
+						PQ.push(make_pair(-1 * (getManhattanPriority(tempBoard) + steps), tempBoard));
+						checked.insert(tempBoard);
+					}
 				}
 				if (j > 0) {
 					tempBoard = move(board, i, j, i, j - 1);
-					PQ.push(make_pair(-1 * (getPriority(tempBoard) + steps), tempBoard));
+					if (checked.find(tempBoard) == checked.end()) {
+						PQ.push(make_pair(-1 * (getManhattanPriority(tempBoard) + steps), tempBoard));
+						checked.insert(tempBoard);
+					}
 				}
 				if (j < 2) {
 					tempBoard = move(board, i, j, i, j + 1);
-					PQ.push(make_pair(-1 * (getPriority(tempBoard) + steps), tempBoard));
+					if (checked.find(tempBoard) == checked.end()) {
+						PQ.push(make_pair(-1 * (getManhattanPriority(tempBoard) + steps), tempBoard));
+						checked.insert(tempBoard);
+					}
 				}
 				break;
 			}
@@ -68,48 +114,55 @@ void makeMove(vector<int> board, int steps) {
 }
 
 int main() {
-	// Define the goal:
+	// Goal board is:
+	// [1, 2, 3]
+	// [8, 0, 4]
+	// [7, 6, 5]
 	goal.push_back(1);
 	goal.push_back(2);
 	goal.push_back(3);
-	goal.push_back(4);
-	goal.push_back(5);
-	goal.push_back(6);
-	goal.push_back(7);
 	goal.push_back(8);
 	goal.push_back(0);
+	goal.push_back(4);
+	goal.push_back(7);
+	goal.push_back(6);
+	goal.push_back(5);
 
 	// Current board is: 
-	// [0, 1, 3]
-	// [4, 2, 5]
-	// [7, 8, 6]
+	// [1, 3, 4]
+	// [8, 0, 5]
+	// [7, 2, 6]
 	vector<int> board;
-	board.push_back(0);
 	board.push_back(1);
 	board.push_back(3);
 	board.push_back(4);
-	board.push_back(2);
+	board.push_back(8);
+	board.push_back(0);
 	board.push_back(5);
 	board.push_back(7);
-	board.push_back(8);
+	board.push_back(2);
 	board.push_back(6);
 
-	PQ.push(make_pair(-1 * getPriority(board), board));
+	PQ.push(make_pair(-1 * getManhattanPriority(board), board));
 	vector <int> tempBoard;
-	int steps = 0;
-
+	int steps;
+	int examinations = 0;
 	while (!PQ.empty()) {
 		tempPair = PQ.top();
 		PQ.pop();
 		int priority = tempPair.first;
 		vector <int> tempBoard = tempPair.second;
-		display(tempBoard);
 		if (tempBoard == goal) {
-			cout << "Steps taken = " << steps << endl;
+			cout << "Moves required = " << -1 * priority << endl;
+			cout << "State Examinations = " << examinations << endl;
 			break;
 		}
-		steps++;
-		makeMove(tempBoard, steps);
+		examinations++;
+		steps = -1 * priority - getManhattanPriority(tempBoard);
+		makeMove(tempBoard, steps + 1);
+	}
+	if (PQ.empty()) {
+		cout << "Solution not possible." << endl;
 	}
 	return 0;
 }

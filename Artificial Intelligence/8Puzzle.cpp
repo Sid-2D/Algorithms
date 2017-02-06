@@ -9,8 +9,8 @@
 
 using namespace std;
 
-priority_queue < pair <int, vector<int> > > PQ;
-pair <int, vector<int> > tempPair;
+priority_queue < pair <int, pair < vector<int>, vector<char> > > > PQ;
+pair <int, pair < vector<int>, vector<char> > > tempPair;
 vector<int> goal;
 
 // A global hash to prevent same state to be inserted again
@@ -74,37 +74,46 @@ vector<int> move(vector<int> board, int i, int j, int newI, int newJ) {
 	return board;
 }
 
-void makeMove(vector<int> board, int steps) {
+void makeMove(vector<int> board, vector<char> moves, int steps) {
 	vector<int> tempBoard;
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
 			if (board[i * 3 + j] == 0) {
+				vector <char> childMoves = moves;
 				if (i > 0) {
 					tempBoard = move(board, i, j, i - 1, j);
 					if (checked.find(tempBoard) == checked.end()) {
-						PQ.push(make_pair(-1 * (getManhattanPriority(tempBoard) + steps), tempBoard));
+						childMoves.push_back('L');
+						PQ.push(make_pair(-1 * (getManhattanPriority(tempBoard) + steps), make_pair(tempBoard, childMoves)));
 						checked.insert(tempBoard);
+						childMoves.pop_back();
 					}
 				}
 				if (i < 2) {
 					tempBoard = move(board, i, j, i + 1, j);
 					if (checked.find(tempBoard) == checked.end()) {
-						PQ.push(make_pair(-1 * (getManhattanPriority(tempBoard) + steps), tempBoard));
+						childMoves.push_back('R');
+						PQ.push(make_pair(-1 * (getManhattanPriority(tempBoard) + steps), make_pair(tempBoard, childMoves)));
 						checked.insert(tempBoard);
+						childMoves.pop_back();
 					}
 				}
 				if (j > 0) {
 					tempBoard = move(board, i, j, i, j - 1);
 					if (checked.find(tempBoard) == checked.end()) {
-						PQ.push(make_pair(-1 * (getManhattanPriority(tempBoard) + steps), tempBoard));
+						childMoves.push_back('U');
+						PQ.push(make_pair(-1 * (getManhattanPriority(tempBoard) + steps), make_pair(tempBoard, childMoves)));
 						checked.insert(tempBoard);
+						childMoves.pop_back();
 					}
 				}
 				if (j < 2) {
 					tempBoard = move(board, i, j, i, j + 1);
 					if (checked.find(tempBoard) == checked.end()) {
-						PQ.push(make_pair(-1 * (getManhattanPriority(tempBoard) + steps), tempBoard));
+						childMoves.push_back('D');
+						PQ.push(make_pair(-1 * (getManhattanPriority(tempBoard) + steps), make_pair(tempBoard, childMoves)));
 						checked.insert(tempBoard);
+						childMoves.pop_back();
 					}
 				}
 				break;
@@ -142,24 +151,28 @@ int main() {
 	board.push_back(7);
 	board.push_back(2);
 	board.push_back(6);
-
-	PQ.push(make_pair(-1 * getManhattanPriority(board), board));
-	vector <int> tempBoard;
+	vector<char> empty;
+	PQ.push(make_pair(-1 * getManhattanPriority(board), make_pair(board, empty)));
+	vector<int> tempBoard;
 	int steps;
 	int examinations = 0;
 	while (!PQ.empty()) {
 		tempPair = PQ.top();
 		PQ.pop();
 		int priority = tempPair.first;
-		vector <int> tempBoard = tempPair.second;
+		vector<int> tempBoard = tempPair.second.first;
 		if (tempBoard == goal) {
 			cout << "Moves required = " << -1 * priority << endl;
 			cout << "State Examinations = " << examinations << endl;
+			cout << "Moves: ";
+			for (int i = 0; i < tempPair.second.second.size(); i++) {
+				cout << tempPair.second.second[i] << " ";
+			}
 			break;
 		}
 		examinations++;
 		steps = -1 * priority - getManhattanPriority(tempBoard);
-		makeMove(tempBoard, steps + 1);
+		makeMove(tempBoard, tempPair.second.second, steps + 1);
 	}
 	if (PQ.empty()) {
 		cout << "Solution not possible." << endl;

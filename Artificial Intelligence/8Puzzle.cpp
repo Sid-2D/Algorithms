@@ -83,7 +83,7 @@ void makeMove(vector<int> board, vector<char> moves, int steps) {
 				if (i > 0) {
 					tempBoard = move(board, i, j, i - 1, j);
 					if (checked.find(tempBoard) == checked.end()) {
-						childMoves.push_back('L');
+						childMoves.push_back('U');
 						PQ.push(make_pair(-1 * (getManhattanPriority(tempBoard) + steps), make_pair(tempBoard, childMoves)));
 						checked.insert(tempBoard);
 						childMoves.pop_back();
@@ -92,7 +92,7 @@ void makeMove(vector<int> board, vector<char> moves, int steps) {
 				if (i < 2) {
 					tempBoard = move(board, i, j, i + 1, j);
 					if (checked.find(tempBoard) == checked.end()) {
-						childMoves.push_back('R');
+						childMoves.push_back('D');
 						PQ.push(make_pair(-1 * (getManhattanPriority(tempBoard) + steps), make_pair(tempBoard, childMoves)));
 						checked.insert(tempBoard);
 						childMoves.pop_back();
@@ -101,7 +101,7 @@ void makeMove(vector<int> board, vector<char> moves, int steps) {
 				if (j > 0) {
 					tempBoard = move(board, i, j, i, j - 1);
 					if (checked.find(tempBoard) == checked.end()) {
-						childMoves.push_back('U');
+						childMoves.push_back('L');
 						PQ.push(make_pair(-1 * (getManhattanPriority(tempBoard) + steps), make_pair(tempBoard, childMoves)));
 						checked.insert(tempBoard);
 						childMoves.pop_back();
@@ -110,7 +110,7 @@ void makeMove(vector<int> board, vector<char> moves, int steps) {
 				if (j < 2) {
 					tempBoard = move(board, i, j, i, j + 1);
 					if (checked.find(tempBoard) == checked.end()) {
-						childMoves.push_back('D');
+						childMoves.push_back('R');
 						PQ.push(make_pair(-1 * (getManhattanPriority(tempBoard) + steps), make_pair(tempBoard, childMoves)));
 						checked.insert(tempBoard);
 						childMoves.pop_back();

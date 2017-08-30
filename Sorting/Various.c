@@ -30,14 +30,20 @@ void display(int a[], int n) {
 }
 
 void bubblesort(int a[], int n) {
-	int i, j, tmp;
+	int i, j, tmp, swapped;
 	for(i = 0; i < n; i++) {
+		swapped = 0;
 		for(j = 0; j < n - i - 1; j++) {
 			if(a[j] > a[j + 1]) {
+				swapped = 1;
 				tmp = a[j + 1];
 				a[j + 1] = a[j];
-				a[j]=tmp;
+				a[j] = tmp;
 			}
+		}
+		// Optimization for sorted arrays
+		if (!swapped) {
+			break;
 		}
 	}
 	display(a, n);

@@ -1,3 +1,5 @@
+// Link: https://www.hackerrank.com/domains/data-structures/disjoint-set
+
 #include <iostream>
 #include <cstdio>
 #include <vector>

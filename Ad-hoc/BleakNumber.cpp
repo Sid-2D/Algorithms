@@ -1,3 +1,5 @@
+// Link: http://practice.geeksforgeeks.org/problems/bleak-numbers/0
+
 #include <iostream>
 #include <cmath>
 

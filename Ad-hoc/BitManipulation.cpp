@@ -58,13 +58,28 @@ void insertBits() {
 	int m, n, j = 6, i = 2;
 	m = binaryToInt("10011");
 	n = binaryToInt("10000000000");
+	cout << "10011" << endl << "10000000000" << endl;
 	int ones = ~0;
+	// Set all ones left of bit j
 	int left = ones << (j + 1);
+	// Set all ones right of bit i
 	int right = ((1 << i) - 1);
+	int mask = (left | right);
+	int n_cleared = (mask & n);
+	int m_shifted = (m << i);
+	int ans = (n_cleared | m_shifted);
+	intToBinary(ans);
+}
+
+void pairWiseSwap() {
+	int x = 9;
+	int ans = ( ((x & 0xaa) >> 1) | ((x & 0x55) << 1) );
+	cout << ans;
 }
 
 int main() {
-	// leastBitsInvert();
+	leastBitsInvert();
 	insertBits();
+	pairWiseSwap();
 	return 0;
 }

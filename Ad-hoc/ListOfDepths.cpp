@@ -21,16 +21,6 @@ n* init(int data) {
 	return vertex;
 }
 
-void inorderRecursion(n *root) {
-	if (root -> left != NULL) {
-		inorderRecursion(root -> left);
-	}
-	cout << root -> data << " ";
-	if (root -> right != NULL) {
-		inorderRecursion(root -> right);
-	}
-}
-
 void preorderRecursion(n *root) {
 	cout << root -> data << " ";
 	if (root -> left != NULL) {
@@ -39,16 +29,6 @@ void preorderRecursion(n *root) {
 	if (root -> right != NULL) {
 		preorderRecursion(root -> right);
 	}
-}
-
-void postorderRecursion(n *root) {
-	if (root -> left != NULL) {
-		postorderRecursion(root -> left);
-	}
-	if (root -> right != NULL) {
-		postorderRecursion(root -> right);
-	}
-	cout << root -> data << " ";
 }
 
 n* addNode(int arr[], int start, int end) {
@@ -101,7 +81,7 @@ void makeLists() {
 					break;
 				}
 				one = false;
-				break;
+				continue;
 			}
 			treeNode = Q1.front();
 			Q1.pop();
@@ -119,7 +99,7 @@ void makeLists() {
 					break;
 				}
 				one = true;
-				break;
+				continue;
 			}
 			treeNode = Q2.front();
 			Q2.pop();
@@ -138,14 +118,16 @@ void makeLists() {
 			lastNode = lastNode -> next;
 		}
 	}
-	display(lists[2]);
+	for (vector <list*>::const_iterator it = lists.begin(); it != lists.end(); it++) {
+		display(*it);
+	}
 }
 
 int main() {
 	int arr[] = {1, 2, 3, 4, 5, 6};
 	root = addNode(arr, 0, 5);
+	preorderRecursion(root);
 	cout << "\n";
-	// preorderRecursion(root);
 	makeLists();
 	return 0;
 }
